@@ -45,9 +45,16 @@ else:
 # differently as long as you use get_database()
 def get_database(this_connection=connection):
     if __django_12__:
-        return this_connection[settings.DATABASES['mongodb']['NAME']]
+        db = this_connection[settings.DATABASES['mongodb']['NAME']]
+        user = settings.DATABASES['mongodb'].get("USER")
+        password = settings.DATABASES['mongodb'].get("PASSWORD")
     else:
-        return this_connection[settings.MONGO_DATABASE_NAME]
+        db = this_connection[settings.MONGO_DATABASE_NAME]
+        user = this_connection[settings.MONGO_DATABASE_USER]
+        password = this_connection[settings.MONGO_DATABASE_PASSWORD]
+    if user or password:
+        db.authenticate(user, password)
+    return db
 
 
 def get_version():
